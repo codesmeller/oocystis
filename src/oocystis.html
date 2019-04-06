@@ -1,0 +1,1216 @@
+<!DOCTYPE html>
+<html>
+  <head lang="en">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Oocystis</title>
+
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="css/oocystis.css">
+
+    <script type="text/javascript" src="js/jquery-1.12.3.min.js"></script>
+    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/oocystis.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-12">
+          <div id="license" class="alert alert-info" role="alert">
+            <span>By using the application you accept <a href="license.html" target="_blank">terms and conditions</a>.</span>
+            <button type="button" class="btn btn-danger btn-xs close-button" onclick="closeLicenseClick()">X</button>
+          </div>
+          <div id="quickStart" class="alert alert-info hidden" role="alert">
+            <span>Not sure how to start? Check out the <a href="quick-start-guide.html" target="_blank">Quick Start Guide</a>.</span>
+            <button type="button" class="btn btn-danger btn-xs close-button" onclick="closeQuickStartClick()">X</button>
+          </div>
+          <div class="errorMessages">
+            <div id="error1" class="alert alert-danger hidden" role="alert">
+              <span>Error #1 (Balance Sheet): Some assets you entered have negative values. Make sure that every asset has a non-negative value.</span>
+              <button id="btnError1Close" type="button" class="btn btn-danger btn-xs close-button" onclick="closeErrorClick(this)">X</button>
+            </div>
+            <div id="error2" class="alert alert-danger hidden" role="alert">
+              <span>Error #2 (Balance Sheet): You haven't invested in any assets yet. Make sure to enter the assets that will generate income for your business.</span>
+              <button id="btnError2Close" type="button" class="btn btn-danger btn-xs close-button" onclick="closeErrorClick(this)">X</button>
+            </div>
+            <div id="error3" class="alert alert-danger hidden" role="alert">
+              <span>Error #3 (Income Statement): You haven't planned your sales or costs yet. Make sure to estimate your sales and costs.</span>
+              <button id="btnError3Close" type="button" class="btn btn-danger btn-xs close-button" onclick="closeErrorClick(this)">X</button>
+            </div>
+            <div id="error4" class="alert alert-danger hidden" role="alert">
+              <span>Error #4 (Balance Sheet): There is no paid-in capital yet. Make sure to plan how much capital investors will provide upon founding the company.</span>
+              <button id="btnError4Close" type="button" class="btn btn-danger btn-xs close-button" onclick="closeErrorClick(this)">X</button>
+            </div>
+            <div id="error5" class="alert alert-danger hidden" role="alert">
+              <span>Error #5 (Balance Sheet): It looks like your business is going to run out of cash. Make sure to plan the financing of your business.</span>
+              <button id="btnError5Close" type="button" class="btn btn-danger btn-xs close-button" onclick="closeErrorClick(this)">X</button>
+            </div>
+            <div id="error6" class="alert alert-danger hidden" role="alert">
+              <span>Error #6 (Settings): All percentage values must be between 0 and 100.</span>
+              <button id="btnError6Close" type="button" class="btn btn-danger btn-xs close-button" onclick="closeErrorClick(this)">X</button>
+            </div>
+            <div id="error7" class="alert alert-danger hidden" role="alert">
+              <span>Error #7: Failed to load file.</span>
+              <button id="btnError7Close" type="button" class="btn btn-danger btn-xs close-button" onclick="closeErrorClick(this)">X</button>
+            </div>
+            <div id="success" class="alert alert-success hidden" role="alert">
+              <span>Sucess: Your business plan looks good!</span>
+              <button id="btnSuccessClose" type="button" class="btn btn-danger btn-xs close-button" onclick="closeErrorClick(this)">X</button>
+            </div>
+          </div>
+          <ul class="nav nav-tabs" data-tabs="tabs"p>
+            <li><a data-toggle="tab" href="#valuation">Valuation</a></li>
+            <li class="active"><a data-toggle="tab" href="#balancesheet">Balance sheet</a></li>
+            <li><a data-toggle="tab" href="#incomestatement">Income statement</a></li>
+            <li><a data-toggle="tab" href="#cashflow">Cash flow</a></li>
+            <li><a data-toggle="tab" href="#settings">Settings</a></li>
+            <span class="glyphicon glyphicon-floppy-disk loadSave" onclick="saveBusinessPlan()" data-toggle="tooltip" data-placement="bottom" title="Save Business Plan"></span>
+            <span class="glyphicon glyphicon-folder-open loadSave" onclick="loadBusinessPlan()" data-toggle="tooltip" data-placement="bottom" title="Load Business Plan"></span>
+            <input id="file" type="file" class="hidden" name="file" onchange="fileSelected()" />
+          </ul>
+          <div class="tab-content">
+            <div id="valuation" class="tab-pane fade">
+              <div>
+                <table class="table table-hover table-condensed">
+                  <tr>
+                    <th></th>
+                    <th><span class="year1"></span></th>
+                    <th><span class="year2"></span></th>
+                    <th><span class="year3"></span></th>
+                    <th><span class="year4"></span></th>
+                    <th><span class="year5"></span></th>
+                  </tr>
+                  <tr>
+                    <td class="table-first">Dividend</td>
+                    <td><span data="dividends1"></span></td>
+                    <td><span data="dividends2"></span></td>
+                    <td><span data="dividends3"></span></td>
+                    <td><span data="dividends4"></span></td>
+                    <td><span data="dividends5"></span></td>
+                  </tr>
+                  <tr>
+                    <td class="table-first">Discount factor</td>
+                    <td><span data="df1"></span></td>
+                    <td><span data="df2"></span></td>
+                    <td><span data="df3"></span></td>
+                    <td><span data="df4"></span></td>
+                    <td><span data="df5"></span></td>
+                  </tr>
+                  <tr>
+                    <td class="table-first"><strong>Present value of dividend</strong></td>
+                    <td><span><strong data="pv1"></strong></span></td>
+                    <td><span><strong data="pv2"></strong></span></td>
+                    <td><span><strong data="pv3"></strong></span></td>
+                    <td><span><strong data="pv4"></strong></span></td>
+                    <td><span><strong data="pv5"></strong></span></td>
+                  </tr>
+                </table>
+              </div>
+              <div>
+                <table class="table table-hover table-condensed table-narrow">
+                  <tr>
+                    <td class="table-first">Total shareholders's equity at the end of last year:</td>
+                    <td><span data="totalShareholdersEquity5"></span></td>
+                  </tr>
+                  <tr>
+                    <td class="table-first"><strong>Present value of which is:</strong></td>
+                    <td><strong data="pvOfResidualValue"></strong></td>
+                  </tr>
+                </table>
+                <hr>
+                <div class="input-group">
+                  <span class="input-group-addon input-group-addon-first">
+                    <strong>Net Present Value (NPV): </strong>
+                    <span class="glyphicon glyphicon-info-sign" data-toggle="popover" title="Net Present Value (NPV)" data-content="NPV from investors' point of view. Present value of dividends and residual value of business less initial investment."></span></td>
+                  </span>
+                  <span class="input-group-addon input-group-addon-last"><strong data="npvBusiness"></strong></span>
+                </div>
+                <div class="input-group">
+                  <span class="input-group-addon input-group-addon-first">
+                    <strong>Internal Rate of Return (IRR, %): </strong>
+                    <span class="glyphicon glyphicon-info-sign" data-toggle="popover" title="Internal Rate of Return (IRR)" data-content="Opportunity cost of capital for which NPV of business would be zero."></span></td>
+                  </span>
+                  <span class="input-group-addon input-group-addon-last"><strong data="irr"></strong></span>
+                </div>
+              </div>
+            </div>
+            <div id="balancesheet" class="tab-pane active">
+              <table class="table table-hover table-condensed">
+                <tr>
+                  <th class="table-first">
+                    <button id="editBalanceSheet" type="button" class="btn btn-primary" onclick="editBalanceSheet()">Edit</button>
+                    <button id="doneBalanceSheet" type="button" class="btn btn-success hidden" onclick="doneBalanceSheet()">Done</button>
+                    <button id="checkBalanceSheet" type="button" class="btn btn-primary" onclick="check()">Check</button>
+                  </th>
+                  <th><span class="year1"></span></th>
+                  <th><span class="year2"></span></th>
+                  <th><span class="year3"></span></th>
+                  <th><span class="year4"></span></th>
+                  <th><span class="year5"></span></th>
+                </tr>
+                <tr>
+                  <th class="text-uppercase" colspan="6">Assets</th>
+                </tr>
+                <tr>
+                  <td class="table-first table-first-shift"><span>Cash & equivalents</span>
+                    <span class="glyphicon glyphicon-info-sign" data-toggle="popover" title="Cash & equivalents" data-content="Calculated as previous year's value plus current year's cash-flow."></span>
+                  </td>
+                  <td>
+                    <span data="cashAndEquivalents1"></span>
+                  </td>
+                  <td>
+                    <span data="cashAndEquivalents2"></span>
+                  </td>
+                  <td>
+                    <span data="cashAndEquivalents3"></span>
+                  </td>
+                  <td>
+                    <span data="cashAndEquivalents4"></span>
+                  </td>
+                  <td>
+                    <span data="cashAndEquivalents5"></span>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="table-first table-first-shift"><span>Marketable securities</span></td>
+                  <td class="e1 e2">
+                    <span data="marketableSecurities1"></span>
+                    <input type="number" class="form-control hidden" data="marketableSecurities1">
+                  </td>
+                  <td class="e1">
+                    <span data="marketableSecurities2"></span>
+                    <input type="number" class="form-control hidden" data="marketableSecurities2">
+                  </td>
+                  <td class="e1">
+                    <span data="marketableSecurities3"></span>
+                    <input type="number" class="form-control hidden" data="marketableSecurities3">
+                  </td>
+                  <td class="e1">
+                    <span data="marketableSecurities4"></span>
+                    <input type="number" class="form-control hidden" data="marketableSecurities4">
+                  </td>
+                  <td class="e1">
+                    <span data="marketableSecurities5"></span>
+                    <input type="number" class="form-control hidden" data="marketableSecurities5">
+                  </td>
+                </tr>
+                <tr>
+                  <td class="table-first table-first-shift"><span>Accounts receivable</span></td>
+                  <td class="e1 e2">
+                    <span data="accountsReceivable1"></span>
+                    <input type="number" class="form-control hidden" data="accountsReceivable1">
+                  </td>
+                  <td class="e1">
+                    <span data="accountsReceivable2"></span>
+                    <input type="number" class="form-control hidden" data="accountsReceivable2">
+                  </td>
+                  <td class="e1">
+                    <span data="accountsReceivable3"></span>
+                    <input type="number" class="form-control hidden" data="accountsReceivable3">
+                  </td>
+                  <td class="e1">
+                    <span data="accountsReceivable4"></span>
+                    <input type="number" class="form-control hidden" data="accountsReceivable4">
+                  </td>
+                  <td class="e1">
+                    <span data="accountsReceivable5"></span>
+                    <input type="number" class="form-control hidden" data="accountsReceivable5">
+                  </td>
+                </tr>
+                <tr>
+                  <td class="table-first table-first-shift"><span>Inventories</span></td>
+                  <td class="e1 e2">
+                    <span  data="inventories1"></span>
+                    <input type="number" class="form-control hidden" data="inventories1">
+                  </td>
+                  <td class="e1">
+                    <span data="inventories2"></span>
+                    <input type="number" class="form-control hidden" data="inventories2">
+                  </td>
+                  <td class="e1">
+                    <span data="inventories3"></span>
+                    <input type="number" class="form-control hidden" data="inventories3">
+                  </td>
+                  <td class="e1">
+                    <span data="inventories4"></span>
+                    <input type="number" class="form-control hidden" data="inventories4">
+                  </td>
+                  <td class="e1">
+                    <span data="inventories5"></span>
+                    <input type="number" class="form-control hidden" data="inventories5">
+                  </td>
+                </tr>
+                <tr>
+                  <td class="table-first table-first-shift"><span>Other current assets</span></td>
+                  <td class="e1 e2">
+                    <span data="otherCurrentAssets1"></span>
+                    <input type="number" class="form-control hidden" data="otherCurrentAssets1">
+                  </td>
+                  <td class="e1">
+                    <span data="otherCurrentAssets2"></span>
+                    <input type="number" class="form-control hidden" data="otherCurrentAssets2">
+                  </td>
+                  <td class="e1">
+                    <span data="otherCurrentAssets3"></span>
+                    <input type="number" class="form-control hidden" data="otherCurrentAssets3">
+                  </td>
+                  <td class="e1">
+                    <span data="otherCurrentAssets4"></span>
+                    <input type="number" class="form-control hidden" data="otherCurrentAssets4">
+                  </td>
+                  <td class="e1">
+                    <span data="otherCurrentAssets5"></span>
+                    <input type="number" class="form-control hidden" data="otherCurrentAssets5">
+                  </td>
+                </tr>
+                <tr>
+                  <td class="text-capitalize"><strong>Total current assets</strong></td>
+                  <td>
+                    <span><strong data="totalCurrentAssets1"></strong></span>
+                  </td>
+                  <td>
+                    <span><strong data="totalCurrentAssets2"></strong></span>
+                  </td>
+                  <td>
+                    <span><strong data="totalCurrentAssets3"></strong></span>
+                  </td>
+                  <td>
+                    <span><strong data="totalCurrentAssets4"></strong></span>
+                  </td>
+                  <td>
+                    <span><strong data="totalCurrentAssets5"></strong></span>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="table-first"><span>Property, plant and equipment</span></td>
+                  <td class="e1 e2">
+                    <span data="propertyPlantAndEquipment1"></span>
+                    <input type="number" class="form-control hidden" data="propertyPlantAndEquipment1">
+                  </td>
+                  <td class="e1">
+                    <span data="propertyPlantAndEquipment2"></span>
+                    <input type="number" class="form-control hidden" data="propertyPlantAndEquipment2">
+                  </td>
+                  <td class="e1">
+                    <span data="propertyPlantAndEquipment3"></span>
+                    <input type="number" class="form-control hidden" data="propertyPlantAndEquipment3">
+                  </td>
+                  <td class="e1">
+                    <span data="propertyPlantAndEquipment4"></span>
+                    <input type="number" class="form-control hidden" data="propertyPlantAndEquipment4">
+                  </td>
+                  <td class="e1">
+                    <span data="propertyPlantAndEquipment5"></span>
+                    <input type="number" class="form-control hidden" data="propertyPlantAndEquipment5">
+                  </td>
+                </tr>
+                <tr>
+                  <td class="table-first"><span>Accumulated depreciation/amortization</span></td>
+                  <td>
+                    <span data="accumulatedDepriciationAmortization1"></span>
+                  </td>
+                  <td>
+                    <span data="accumulatedDepriciationAmortization2"></span>
+                  </td>
+                  <td>
+                    <span data="accumulatedDepriciationAmortization3"></span>
+                  </td>
+                  <td>
+                    <span data="accumulatedDepriciationAmortization4"></span>
+                  </td>
+                  <td>
+                    <span data="accumulatedDepriciationAmortization5"></span>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="table-first">Long term investments</td>
+                  <td class="e1 e2">
+                    <span data="longTermInvestments1"></span>
+                    <input type="number" class="form-control hidden" data="longTermInvestments1">
+                  </td>
+                  <td class="e1">
+                    <span data="longTermInvestments2"></span>
+                    <input type="number" class="form-control hidden" data="longTermInvestments2">
+                  </td>
+                  <td class="e1">
+                    <span data="longTermInvestments3"></span>
+                    <input type="number" class="form-control hidden" data="longTermInvestments3">
+                  </td>
+                  <td class="e1">
+                    <span data="longTermInvestments4"></span>
+                    <input type="number" class="form-control hidden" data="longTermInvestments4">
+                  </td>
+                  <td class="e1">
+                    <span data="longTermInvestments5"></span>
+                    <input type="number" class="form-control hidden" data="longTermInvestments5">
+                  </td>
+                </tr>
+                <tr>
+                  <td class="table-first">Goodwill</td>
+                  <td class="e1 e2">
+                    <span data="goodwill1"></span>
+                    <input type="number" class="form-control hidden" data="goodwill1">
+                  </td>
+                  <td class="e1">
+                    <span data="goodwill2"></span>
+                    <input type="number" class="form-control hidden" data="goodwill2">
+                  </td>
+                  <td class="e1">
+                    <span data="goodwill3"></span>
+                    <input type="number" class="form-control hidden" data="goodwill3">
+                  </td>
+                  <td class="e1">
+                    <span data="goodwill4"></span>
+                    <input type="number" class="form-control hidden" data="goodwill4">
+                  </td>
+                  <td class="e1">
+                    <span data="goodwill5"></span>
+                    <input type="number" class="form-control hidden" data="goodwill5">
+                  </td>
+                </tr>
+                <tr>
+                  <td class="table-first">Intangible assets</td>
+                  <td class="e1 e2">
+                    <span data="intangibleAssets1"></span>
+                    <input type="number" class="form-control hidden" data="intangibleAssets1">
+                  </td>
+                  <td class="e1">
+                    <span data="intangibleAssets2"></span>
+                    <input type="number" class="form-control hidden" data="intangibleAssets2">
+                  </td>
+                  <td class="e1">
+                    <span data="intangibleAssets3"></span>
+                    <input type="number" class="form-control hidden" data="intangibleAssets3">
+                  </td>
+                  <td class="e1">
+                    <span data="intangibleAssets4"></span>
+                    <input type="number" class="form-control hidden" data="intangibleAssets4">
+                  </td>
+                  <td class="e1">
+                    <span data="intangibleAssets5"></span>
+                    <input type="number" class="form-control hidden" data="intangibleAssets5">
+                  </td>
+                </tr>
+                <tr>
+                  <td class="table-first">Other assets</td>
+                  <td class="e1 e2">
+                    <span data="otherAssets1"></span>
+                    <input type="number" class="form-control hidden" data="otherAssets1">
+                  </td>
+                  <td class="e1">
+                    <span data="otherAssets2"></span>
+                    <input type="number" class="form-control hidden" data="otherAssets2">
+                  </td>
+                  <td class="e1">
+                    <span data="otherAssets3"></span>
+                    <input type="number" class="form-control hidden" data="otherAssets3">
+                  </td>
+                  <td class="e1">
+                    <span data="otherAssets4"></span>
+                    <input type="number" class="form-control hidden" data="otherAssets4">
+                  </td>
+                  <td class="e1">
+                    <span data="otherAssets5"></span>
+                    <input type="number" class="form-control hidden" data="otherAssets5">
+                  </td>
+                </tr>
+                <tr>
+                  <td class="table-first" class="text-capitalize"><strong>Total assets</strong></td>
+                  <td>
+                    <span><strong data="totalAssets1"></strong></span>
+                  </td>
+                  <td>
+                    <span><strong data="totalAssets2"></strong></span>
+                  </td>
+                  <td>
+                    <span><strong data="totalAssets3"></strong></span>
+                  </td>
+                  <td>
+                    <span><strong data="totalAssets4"></strong></span>
+                  </td>
+                  <td>
+                    <span><strong data="totalAssets5"></strong></span>
+                  </td>
+                </tr>
+                <tr>
+                  <th class="text-uppercase" colspan="6">Liabilities</th>
+                </tr>
+                <tr>
+                  <td class="table-first table-first-shift">
+                    <span>Debt due for repayment</span>
+                  </td>
+                  <td class="e5">
+                    <span data="debtDueForRepayment1"></span>
+                    <input type="number" class="form-control hidden" data="debtDueForRepayment1">
+                  </td>
+                  <td class="e5">
+                    <span data="debtDueForRepayment2"></span>
+                    <input type="number" class="form-control hidden" data="debtDueForRepayment2">
+                  </td>
+                  <td class="e5">
+                    <span data="debtDueForRepayment3"></span>
+                    <input type="number" class="form-control hidden" data="debtDueForRepayment3">
+                  </td>
+                  <td class="e5">
+                    <span data="debtDueForRepayment4"></span>
+                    <input type="number" class="form-control hidden" data="debtDueForRepayment4">
+                  </td>
+                  <td class="e5">
+                    <span data="debtDueForRepayment5"></span>
+                    <input type="number" class="form-control hidden" data="debtDueForRepayment5">
+                  </td>
+                </tr>
+                <tr>
+                  <td class="table-first table-first-shift"><span>Accounts payable</span></td>
+                  <td>
+                    <span data="accountsPayable1"></span>
+                    <input type="number" class="form-control hidden" data="accountsPayable1">
+                  </td>
+                  <td>
+                    <span data="accountsPayable2"></span>
+                    <input type="number" class="form-control hidden" data="accountsPayable2">
+                  </td>
+                  <td>
+                    <span data="accountsPayable3"></span>
+                    <input type="number" class="form-control hidden" data="accountsPayable3">
+                  </td>
+                  <td>
+                    <span data="accountsPayable4"></span>
+                    <input type="number" class="form-control hidden" data="accountsPayable4">
+                  </td>
+                  <td>
+                    <span data="accountsPayable5"></span>
+                    <input type="number" class="form-control hidden" data="accountsPayable5">
+                  </td>
+                </tr>
+                <tr>
+                  <td class="table-first table-first-shift"><span>Other current liabilities</span></td>
+                  <td>
+                    <span data="otherCurrentLiabilities1"></span>
+                    <input type="number" class="form-control hidden" data="otherCurrentLiabilities1">
+                  </td>
+                  <td>
+                    <span data="otherCurrentLiabilities2"></span>
+                    <input type="number" class="form-control hidden" data="otherCurrentLiabilities2">
+                  </td>
+                  <td>
+                    <span data="otherCurrentLiabilities3"></span>
+                    <input type="number" class="form-control hidden" data="otherCurrentLiabilities3">
+                  </td>
+                  <td>
+                    <span data="otherCurrentLiabilities4"></span>
+                    <input type="number" class="form-control hidden" data="otherCurrentLiabilities4">
+                  </td>
+                  <td>
+                    <span data="otherCurrentLiabilities5"></span>
+                    <input type="number" class="form-control hidden" data="otherCurrentLiabilities5">
+                  </td>
+                </tr>
+                <tr>
+                  <td class="text-capitalize"><strong>Total current liabilities</strong></td>
+                  <td>
+                    <span><strong data="totalCurrentLiabilities1"></strong></span>
+                  </td>
+                  <td>
+                    <span><strong data="totalCurrentLiabilities2"></strong></span>
+                  </td>
+                  <td>
+                    <span><strong data="totalCurrentLiabilities3"></strong></span>
+                  </td>
+                  <td>
+                    <span><strong data="totalCurrentLiabilities4"></strong></span>
+                  </td>
+                  <td>
+                    <span><strong data="totalCurrentLiabilities5"></strong></span>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="table-first">Long-term debt</td>
+                  <td class="e5">
+                    <span data="longTermDebt1"></span>
+                    <input type="number" class="form-control hidden" data="longTermDebt1">
+                  </td>
+                  <td class="e5">
+                    <span data="longTermDebt2"></span>
+                    <input type="number" class="form-control hidden" data="longTermDebt2">
+                  </td>
+                  <td class="e5">
+                    <span data="longTermDebt3"></span>
+                    <input type="number" class="form-control hidden" data="longTermDebt3">
+                  </td>
+                  <td class="e5">
+                    <span data="longTermDebt4"></span>
+                    <input type="number" class="form-control hidden" data="longTermDebt4">
+                  </td>
+                  <td class="e5">
+                    <span data="longTermDebt5"></span>
+                    <input type="number" class="form-control hidden" data="longTermDebt5">
+                  </td>
+                </tr>
+                <tr>
+                  <td class="text-capitalize"><strong>Total liabilities</strong></td>
+                  <td>
+                    <span><strong data="totalLiabilities1"></strong></span>
+                  </td>
+                  <td>
+                    <span><strong data="totalLiabilities2"></strong></span>
+                  </td>
+                  <td>
+                    <span><strong data="totalLiabilities3"></strong></span>
+                  </td>
+                  <td>
+                    <span><strong data="totalLiabilities4"></strong></span>
+                  </td>
+                  <td>
+                    <span><strong data="totalLiabilities5"></strong></span>
+                  </td>
+                </tr>
+                <tr>
+                  <th class="text-uppercase" colspan="6">Shareholders' Equity</th>
+                </tr>
+                <tr>
+                  <td class="table-first">Common stock and other paid-in capital</td>
+                  <td class="e4">
+                    <span data="commonStockAndOtherPaidInCapital1"></span>
+                    <input type="number" class="form-control hidden" data="commonStockAndOtherPaidInCapital1">
+                  </td>
+                  <td class="e4">
+                    <span data="commonStockAndOtherPaidInCapital2"></span>
+                    <input type="number" class="form-control hidden" data="commonStockAndOtherPaidInCapital2">
+                  </td>
+                  <td class="e4">
+                    <span data="commonStockAndOtherPaidInCapital3"></span>
+                    <input type="number" class="form-control hidden" data="commonStockAndOtherPaidInCapital3">
+                  </td>
+                  <td class="e4">
+                    <span data="commonStockAndOtherPaidInCapital4"></span>
+                    <input type="number" class="form-control hidden" data="commonStockAndOtherPaidInCapital4">
+                  </td>
+                  <td class="e4">
+                    <span data="commonStockAndOtherPaidInCapital5"></span>
+                    <input type="number" class="form-control hidden" data="commonStockAndOtherPaidInCapital5">
+                  </td>
+                </tr>
+                <tr>
+                  <td class="table-first">Retained earnings</td>
+                  <td>
+                    <span data="retainedEarnings1"></span>
+                  </td>
+                  <td>
+                    <span data="retainedEarnings2"></span>
+                  </td>
+                  <td>
+                    <span data="retainedEarnings3"></span>
+                  </td>
+                  <td>
+                    <span data="retainedEarnings4"></span>
+                  </td>
+                  <td>
+                    <span data="retainedEarnings5"></span>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="text-capitalize">
+                    <strong>Total shareholders' equity</strong>
+                    <span class="glyphicon glyphicon-info-sign" data-toggle="popover" title="Total shareholders' equity" data-content="Equals Total Assets less Total Liabilities."></span>
+                  </td>
+                  <td>
+                    <span><strong data="totalShareholdersEquity1"></strong></span>
+                  </td>
+                  <td>
+                    <span><strong data="totalShareholdersEquity2"></strong></span>
+                  </td>
+                  <td>
+                    <span><strong data="totalShareholdersEquity3"></strong></span>
+                  </td>
+                  <td>
+                    <span><strong data="totalShareholdersEquity4"></strong></span>
+                  </td>
+                  <td>
+                    <span><strong data="totalShareholdersEquity5"></strong></span>
+                  </td>
+                </tr>
+              </table>
+            </div>
+            <div id="incomestatement" class="tab-pane fade">
+              <table class="table table-hover table-condensed">
+                <tr>
+                  <th class="table-first">
+                    <button id="editIncomeStatement" type="button" class="btn btn-primary" onclick="editIncomeStatement()">Edit</button>
+                    <button id="doneIncomeStatement" type="button" class="btn btn-success hidden" onclick="doneIncomeStatement()">Done</button>
+                    <button id="checkIncomeStatement" type="button" class="btn btn-primary" onclick="check()">Check</button>
+                  </th>
+                  <th><span class="year1"></span></th>
+                  <th><span class="year2"></span></th>
+                  <th><span class="year3"></span></th>
+                  <th><span class="year4"></span></th>
+                  <th><span class="year5"></span></th>
+                </tr>
+                <tr>
+                  <td class="text-capitalize"><strong>Net sales</strong></td>
+                  <td class="e3">
+                    <span data="netSales1"></span>
+                    <input type="number" class="form-control hidden" data="netSales1">
+                  </td>
+                  <td class="e3">
+                    <span data="netSales2"></span>
+                    <input type="number" class="form-control hidden" data="netSales2">
+                  </td>
+                  <td class="e3">
+                    <span data="netSales3"></span>
+                    <input type="number" class="form-control hidden" data="netSales3">
+                  </td>
+                  <td class="e3">
+                    <span data="netSales4"></span>
+                    <input type="number" class="form-control hidden" data="netSales4">
+                  </td>
+                  <td class="e3">
+                    <span data="netSales5"></span>
+                    <input type="number" class="form-control hidden" data="netSales5">
+                  </td>
+                </tr>
+                <tr>
+                  <td class="table-first">Cost of goods sold (COGS)</td>
+                  <td class="e3">
+                    <span data="costOfGoodsSold1"></span>
+                    <input type="number" class="form-control hidden" data="costOfGoodsSold1">
+                  </td>
+                  <td class="e3">
+                    <span data="costOfGoodsSold2"></span>
+                    <input type="number" class="form-control hidden" data="costOfGoodsSold2">
+                  </td>
+                  <td class="e3">
+                    <span data="costOfGoodsSold3"></span>
+                    <input type="number" class="form-control hidden" data="costOfGoodsSold3">
+                  </td>
+                  <td class="e3">
+                    <span data="costOfGoodsSold4"></span>
+                    <input type="number" class="form-control hidden" data="costOfGoodsSold4">
+                  </td>
+                  <td class="e3">
+                    <span data="costOfGoodsSold5"></span>
+                    <input type="number" class="form-control hidden" data="costOfGoodsSold5">
+                  </td>
+                </tr>
+                <tr>
+                  <td class="text-capitalize"><strong>Gross profit</strong></td>
+                  <td>
+                    <span><strong data="grossProfit1"></strong></span>
+                  </td>
+                  <td>
+                    <span><strong data="grossProfit2"></strong></span>
+                  </td>
+                  <td>
+                    <span><strong data="grossProfit3"></strong></span>
+                  </td>
+                  <td>
+                    <span><strong data="grossProfit4"></strong></span>
+                  </td>
+                  <td>
+                    <span><strong data="grossProfit5"></strong></span>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="table-first">Selling, general and administrative expenses</td>
+                  <td class="e3">
+                    <span data="sellingGeneralAndOtherExpenses1"></span>
+                    <input type="number" class="form-control hidden" data="sellingGeneralAndOtherExpenses1">
+                  </td>
+                  <td class="e3">
+                    <span data="sellingGeneralAndOtherExpenses2"></span>
+                    <input type="number" class="form-control hidden" data="sellingGeneralAndOtherExpenses2">
+                  </td>
+                  <td class="e3">
+                    <span data="sellingGeneralAndOtherExpenses3"></span>
+                    <input type="number" class="form-control hidden" data="sellingGeneralAndOtherExpenses3">
+                  </td>
+                  <td class="e3">
+                    <span data="sellingGeneralAndOtherExpenses4"></span>
+                    <input type="number" class="form-control hidden" data="sellingGeneralAndOtherExpenses4">
+                  </td>
+                  <td class="e3">
+                    <span data="sellingGeneralAndOtherExpenses5"></span>
+                    <input type="number" class="form-control hidden" data="sellingGeneralAndOtherExpenses5">
+                  </td>
+                </tr>
+                <tr>
+                  <td class="table-first">Research & development</td>
+                  <td class="e3">
+                    <span data="researchAndDevelopment1"></span>
+                    <input type="number" class="form-control hidden" data="researchAndDevelopment1">
+                  </td>
+                  <td class="e3">
+                    <span data="researchAndDevelopment2"></span>
+                    <input type="number" class="form-control hidden" data="researchAndDevelopment2">
+                  </td>
+                  <td class="e3">
+                    <span data="researchAndDevelopment3"></span>
+                    <input type="number" class="form-control hidden" data="researchAndDevelopment3">
+                  </td>
+                  <td class="e3">
+                    <span data="researchAndDevelopment4"></span>
+                    <input type="number" class="form-control hidden" data="researchAndDevelopment4">
+                  </td>
+                  <td class="e3">
+                    <span data="researchAndDevelopment5"></span>
+                    <input type="number" class="form-control hidden" data="researchAndDevelopment5">
+                  </td>
+                </tr>
+                <tr>
+                  <td class="table-first">Depriciation/amortization</td>
+                  <td>
+                    <span data="depriciationAmortization1"></span>
+                  </td>
+                  <td>
+                    <span data="depriciationAmortization2"></span>
+                  </td>
+                  <td>
+                    <span data="depriciationAmortization3"></span>
+                  </td>
+                  <td>
+                    <span data="depriciationAmortization4"></span>
+                  </td>
+                  <td>
+                    <span data="depriciationAmortization5"></span>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="table-first">Other operating expenses</td>
+                  <td class="e3">
+                    <span data="otherOperatingExpenses1"></span>
+                    <input type="number" class="form-control hidden" data="otherOperatingExpenses1">
+                  </td>
+                  <td class="e3">
+                    <span data="otherOperatingExpenses2"></span>
+                    <input type="number" class="form-control hidden" data="otherOperatingExpenses2">
+                  </td>
+                  <td class="e3">
+                    <span data="otherOperatingExpenses3"></span>
+                    <input type="number" class="form-control hidden" data="otherOperatingExpenses3">
+                  </td>
+                  <td class="e3">
+                    <span data="otherOperatingExpenses4"></span>
+                    <input type="number" class="form-control hidden" data="otherOperatingExpenses4">
+                  </td>
+                  <td class="e3">
+                    <span data="otherOperatingExpenses5"></span>
+                    <input type="number" class="form-control hidden" data="otherOperatingExpenses5">
+                  </td>
+                </tr>
+                <tr>
+                  <td class="text-capitalize"><strong>Total operating expenses</strong></td>
+                  <td>
+                    <span><strong data="totalOperatingExpenses1"></strong></span>
+                  </td>
+                  <td>
+                    <span><strong data="totalOperatingExpenses2"></strong></span>
+                  </td>
+                  <td>
+                    <span><strong data="totalOperatingExpenses3"></strong></span>
+                  </td>
+                  <td>
+                    <span><strong data="totalOperatingExpenses4"></strong></span>
+                  </td>
+                  <td>
+                    <span><strong data="totalOperatingExpenses5"></strong></span>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="text-capitalize"><strong>Operating income</strong></td>
+                  <td>
+                    <span><strong data="operatingIncome1"></strong></span>
+                  </td>
+                  <td>
+                    <span><strong data="operatingIncome2"></strong></span>
+                  </td>
+                  <td>
+                    <span><strong data="operatingIncome3"></strong></span>
+                  </td>
+                  <td>
+                    <span><strong data="operatingIncome4"></strong></span>
+                  </td>
+                  <td>
+                    <span><strong data="operatingIncome5"></strong></span>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="table-first">Extraordinary items</td>
+                  <td>
+                    <span data="extraordinaryItems1"></span>
+                    <input type="number" class="form-control hidden" data="extraordinaryItems1">
+                  </td>
+                  <td>
+                    <span data="extraordinaryItems2"></span>
+                    <input type="number" class="form-control hidden" data="extraordinaryItems2">
+                  </td>
+                  <td>
+                    <span data="extraordinaryItems3"></span>
+                    <input type="number" class="form-control hidden" data="extraordinaryItems3">
+                  </td>
+                  <td>
+                    <span data="extraordinaryItems4"></span>
+                    <input type="number" class="form-control hidden" data="extraordinaryItems4">
+                  </td>
+                  <td>
+                    <span data="extraordinaryItems5"></span>
+                    <input type="number" class="form-control hidden" data="extraordinaryItems5">
+                  </td>
+                </tr>
+                <tr>
+                  <td class="table-first">Other items</td>
+                  <td>
+                    <span data="otherItems1"></span>
+                    <input type="number" class="form-control hidden" data="otherItems1">
+                  </td>
+                  <td>
+                    <span data="otherItems2"></span>
+                    <input type="number" class="form-control hidden" data="otherItems2">
+                  </td>
+                  <td>
+                    <span data="otherItems3"></span>
+                    <input type="number" class="form-control hidden" data="otherItems3">
+                  </td>
+                  <td>
+                    <span data="otherItems4"></span>
+                    <input type="number" class="form-control hidden" data="otherItems4">
+                  </td>
+                  <td>
+                    <span data="otherItems5"></span>
+                    <input type="number" class="form-control hidden" data="otherItems5">
+                  </td>
+                </tr>
+                <tr>
+                  <td class="table-first"><strong>Earnings Before Intrest and Taxes (EBIT)</strong></td>
+                  <td>
+                    <span><strong data="earningsBeforeIncomeAndTaxes1"></strong></span>
+                  </td>
+                  <td>
+                    <span><strong data="earningsBeforeIncomeAndTaxes2"></strong></span>
+                  </td>
+                  <td>
+                    <span><strong data="earningsBeforeIncomeAndTaxes3"></strong></span>
+                  </td>
+                  <td>
+                    <span><strong data="earningsBeforeIncomeAndTaxes4"></strong></span>
+                  </td>
+                  <td>
+                    <span><strong data="earningsBeforeIncomeAndTaxes5"></strong></span>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="table-first">
+                    <span>Intrest expense</span>
+                    <span class="glyphicon glyphicon-info-sign" data-toggle="popover" title="Intrest expense" data-content="Sum of interests on short and long term debts."></span></td>
+                  <td>
+                    <span data="interestExpense1"></span>
+                  </td>
+                  <td>
+                    <span data="interestExpense2"></span>
+                  </td>
+                  <td>
+                    <span data="interestExpense3"></span>
+                  </td>
+                  <td>
+                    <span data="interestExpense4"></span>
+                  </td>
+                  <td>
+                    <span data="interestExpense5"></span>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="text-capitalize"><strong>Taxable income</strong></td>
+                  <td>
+                    <span><strong data="taxableIncome1"></strong></span>
+                  </td>
+                  <td>
+                    <span><strong data="taxableIncome2"></strong></span>
+                  </td>
+                  <td>
+                    <span><strong data="taxableIncome3"></strong></span>
+                  </td>
+                  <td>
+                    <span><strong data="taxableIncome4"></strong></span>
+                  </td>
+                  <td>
+                    <span><strong data="taxableIncome5"></strong></span>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="table-first">Tax</td>
+                  <td>
+                    <span data="tax1"></span>
+                  </td>
+                  <td>
+                    <span data="tax2"></span>
+                  </td>
+                  <td>
+                    <span data="tax3"></span>
+                  </td>
+                  <td>
+                    <span data="tax4"></span>
+                  </td>
+                  <td>
+                    <span data="tax5"></span>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="text-capitalize"><strong>Net income</strong></td>
+                  <td>
+                    <span><strong data="netIncome1"></strong></span>
+                  </td>
+                  <td>
+                    <span><strong data="netIncome2"></strong></span>
+                  </td>
+                  <td>
+                    <span><strong data="netIncome3"></strong></span>
+                  </td>
+                  <td>
+                    <span><strong data="netIncome4"></strong></span>
+                  </td>
+                  <td>
+                    <span><strong data="netIncome5"></strong></span>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="table-first">Dividends</td>
+                  <td>
+                    <span data="dividends1"></span>
+                    <input type="number" class="form-control hidden" data="dividends1">
+                  </td>
+                  <td>
+                    <span data="dividends2"></span>
+                    <input type="number" class="form-control hidden" data="dividends2">
+                  </td>
+                  <td>
+                    <span data="dividends3"></span>
+                    <input type="number" class="form-control hidden" data="dividends3">
+                  </td>
+                  <td>
+                    <span data="dividends4"></span>
+                    <input type="number" class="form-control hidden" data="dividends4">
+                  </td>
+                  <td>
+                    <span data="dividends5"></span>
+                    <input type="number" class="form-control hidden" data="dividends5">
+                  </td>
+                </tr>
+                <tr>
+                  <td class="table-first">Addition to retained earnings</td>
+                  <td>
+                    <span data="additionToRetainedEarnings1"></span>
+                  </td>
+                  <td>
+                    <span data="additionToRetainedEarnings2"></span>
+                  </td>
+                  <td>
+                    <span data="additionToRetainedEarnings3"></span>
+                  </td>
+                  <td>
+                    <span data="additionToRetainedEarnings4"></span>
+                  </td>
+                  <td>
+                    <span data="additionToRetainedEarnings5"></span>
+                  </td>
+                </tr>
+              </table>
+            </div>
+            <div id="cashflow" class="tab-pane fade">
+              <table class="table table-hover table-condensed">
+                <tr>
+                  <th></th>
+                  <th><span class="year1"></span></th>
+                  <th><span class="year2"></span></th>
+                  <th><span class="year3"></span></th>
+                  <th><span class="year4"></span></th>
+                  <th><span class="year5"></span></th>
+                </tr>
+                <tr>
+                  <th class="text-uppercase" colspan="6">Operating Activities</th>
+                </tr>
+                <tr>
+                  <td class="table-first">Net income (+)</td>
+                  <td><span data="netIncome1"></span></td>
+                  <td><span data="netIncome2"></span></td>
+                  <td><span data="netIncome3"></span></td>
+                  <td><span data="netIncome4"></span></td>
+                  <td><span data="netIncome5"></span></td>
+                </tr>
+                <tr>
+                  <td class="table-first">Depriciation/amortization (+)</td>
+                  <td><span data="depriciationAmortization1"></span></td>
+                  <td><span data="depriciationAmortization2"></span></td>
+                  <td><span data="depriciationAmortization3"></span></td>
+                  <td><span data="depriciationAmortization4"></span></td>
+                  <td><span data="depriciationAmortization5"></span></td>
+                </tr>
+                <tr>
+                  <td class="table-first">Change in accounts receivable (-)</td>
+                  <td><span data="changeInAccountsReceivable1"></span></td>
+                  <td><span data="changeInAccountsReceivable2"></span></td>
+                  <td><span data="changeInAccountsReceivable3"></span></td>
+                  <td><span data="changeInAccountsReceivable4"></span></td>
+                  <td><span data="changeInAccountsReceivable5"></span></td>
+                </tr>
+                <tr>
+                  <td class="table-first">Change in inventories (-)</td>
+                  <td><span data="changeInInventories1"></span></td>
+                  <td><span data="changeInInventories2"></span></td>
+                  <td><span data="changeInInventories3"></span></td>
+                  <td><span data="changeInInventories4"></span></td>
+                  <td><span data="changeInInventories5"></span></td>
+                </tr>
+                <tr>
+                  <td class="table-first">Change in other current assets (-)</td>
+                  <td><span data="changeInOtherCurrrentAssets1"></span></td>
+                  <td><span data="changeInOtherCurrrentAssets2"></span></td>
+                  <td><span data="changeInOtherCurrrentAssets3"></span></td>
+                  <td><span data="changeInOtherCurrrentAssets4"></span></td>
+                  <td><span data="changeInOtherCurrrentAssets5"></span></td>
+                </tr>
+                <tr>
+                  <td class="table-first">Change in accounts payable (+)</td>
+                  <td><span data="changeInAccountsPayable1"></span></td>
+                  <td><span data="changeInAccountsPayable2"></span></td>
+                  <td><span data="changeInAccountsPayable3"></span></td>
+                  <td><span data="changeInAccountsPayable4"></span></td>
+                  <td><span data="changeInAccountsPayable5"></span></td>
+                </tr>
+                <tr>
+                  <td class="table-first">Change in other current liabilities (+)</td>
+                  <td><span data="changeInOtherCurrentLiabilities1"></span></td>
+                  <td><span data="changeInOtherCurrentLiabilities2"></span></td>
+                  <td><span data="changeInOtherCurrentLiabilities3"></span></td>
+                  <td><span data="changeInOtherCurrentLiabilities4"></span></td>
+                  <td><span data="changeInOtherCurrentLiabilities5"></span></td>
+                </tr>
+                <tr>
+                  <td class="table-first"><strong>Total Cash Flow from Operating Activities</strong></td>
+                  <td><span><strong data="operatingCashFlow1"></strong></span></td>
+                  <td><span><strong data="operatingCashFlow2"></strong></span></td>
+                  <td><span><strong data="operatingCashFlow3"></strong></span></td>
+                  <td><span><strong data="operatingCashFlow4"></strong></span></td>
+                  <td><span><strong data="operatingCashFlow5"></strong></span></td>
+                </tr>
+                <tr>
+                  <th class="text-uppercase" colspan="6">Investing Activities</th>
+                </tr>
+                <tr>
+                  <td class="table-first">Investment in fixed assets (-)</td>
+                  <td><span data="investmentInFixedAssets1"></td>
+                  <td><span data="investmentInFixedAssets2"></span></td>
+                  <td><span data="investmentInFixedAssets3"></span></td>
+                  <td><span data="investmentInFixedAssets4"></span></td>
+                  <td><span data="investmentInFixedAssets5"></span></td>
+                </tr>
+                <tr>
+                  <td class="table-first"><strong>Total Cash Flow from Investing Activities</strong></td>
+                  <td><span><strong data="investmentCashFlow1"></strong></span></td>
+                  <td><span><strong data="investmentCashFlow2"></strong></span></td>
+                  <td><span><strong data="investmentCashFlow3"></strong></span></td>
+                  <td><span><strong data="investmentCashFlow4"></strong></span></td>
+                  <td><span><strong data="investmentCashFlow5"></strong></span></td>
+                </tr>
+                <tr>
+                  <th class="text-uppercase" colspan="6">Financing Activities</th>
+                </tr>
+                <tr>
+                  <td class="table-first">Dividends paid (-)</td>
+                  <td><span data="dividendsPaid1"></span></td>
+                  <td><span data="dividendsPaid2"></span></td>
+                  <td><span data="dividendsPaid3"></span></td>
+                  <td><span data="dividendsPaid4"></span></td>
+                  <td><span data="dividendsPaid5"></span></td>
+                </tr>
+                <tr>
+                  <td class="table-first">Change in marketable securities (-)</td>
+                  <td><span data="changeInMarketableSecurities1"></span></td>
+                  <td><span data="changeInMarketableSecurities2"></span></td>
+                  <td><span data="changeInMarketableSecurities3"></span></td>
+                  <td><span data="changeInMarketableSecurities4"></span></td>
+                  <td><span data="changeInMarketableSecurities5"></span></td>
+                </tr>
+                <tr>
+                  <td class="table-first">Change in short-term debt (+)</td>
+                  <td><span data="changeInShortTermDebt1"></span></td>
+                  <td><span data="changeInShortTermDebt2"></span></td>
+                  <td><span data="changeInShortTermDebt3"></span></td>
+                  <td><span data="changeInShortTermDebt4"></span></td>
+                  <td><span data="changeInShortTermDebt5"></span></td>
+                </tr>
+                <tr>
+                  <td class="table-first">Change in long-term debt (+)</td>
+                  <td><span data="changeInLongTermDebt1"></span></td>
+                  <td><span data="changeInLongTermDebt2"></span></td>
+                  <td><span data="changeInLongTermDebt3"></span></td>
+                  <td><span data="changeInLongTermDebt4"></span></td>
+                  <td><span data="changeInLongTermDebt5"></span></td>
+                </tr>
+                <tr>
+                  <td class="table-first">Capital raise (+)</td>
+                  <td><span data="capitalRaise1"></span></td>
+                  <td><span data="capitalRaise2"></span></td>
+                  <td><span data="capitalRaise3"></span></td>
+                  <td><span data="capitalRaise4"></span></td>
+                  <td><span data="capitalRaise5"></span></td>
+                </tr>
+                <tr>
+                  <td class="table-first"><strong>Total Cash Flow from Financial Activities</strong></td>
+                  <td><span><strong data="financingCashFlow1"></strong></span></td>
+                  <td><span><strong data="financingCashFlow2"></strong></span></td>
+                  <td><span><strong data="financingCashFlow3"></strong></span></td>
+                  <td><span><strong data="financingCashFlow4"></strong></span></td>
+                  <td><span><strong data="financingCashFlow5"></strong></span></td>
+                </tr>
+                <tr>
+                  <td class="table-first">
+                    <strong>Change in Cash & Equivalents</strong>
+                    <span class="glyphicon glyphicon-info-sign" data-toggle="popover" title="Change in Cash & Equivalents" data-content="Sum of cash flows from operating, investing and financing activities. This value is added to Cash & Equivalents each year."></span></td>
+                  </td>
+                  <td><span><strong data="cashFlow1"></strong></span></td>
+                  <td><span><strong data="cashFlow2"></strong></span></td>
+                  <td><span><strong data="cashFlow3"></strong></span></td>
+                  <td><span><strong data="cashFlow4"></strong></span></td>
+                  <td><span><strong data="cashFlow5"></strong></span></td>
+                </tr>
+              </table>
+            </div>
+            <div id="settings" class="tab-pane fade">
+              <table class="table table-hover table-condensed table-narrow">
+                <tr class="e6">
+                  <td class="table-first">
+                    <span>Depriciation/amortization per year (%):</span>
+                    <span class="glyphicon glyphicon-info-sign" data-toggle="popover" title="Depriciation/amortization" data-content="Applied to Property, plant & equipment."></span></td>
+                  </td>
+                  <td><input type="number" class="form-control" data="depriciationAmortization" value="20"></td>
+                </tr>
+                <tr class="e6">
+                  <td class="table-first">
+                    <span>Interest on short-term debt (%):</span>
+                    <span class="glyphicon glyphicon-info-sign" data-toggle="popover" title="Interest on short-term debt" data-content="Applied to Debt due for repayment."></span></td>
+                  </td>
+                  <td><input type="number" class="form-control" data="interestOnShortTermDebt" value="20"></td>
+                </tr>
+                <tr class="e6">
+                  <td class="table-first">
+                    <span>Interest on long-term debt (%):</span>
+                    <span class="glyphicon glyphicon-info-sign" data-toggle="popover" title="Interest on long-term debt" data-content="Applied to Long-term debt."></span></td>
+                  </td>
+                  <td><input type="number" class="form-control" data="interestOnLongTermDebt" value="10"></td>
+                </tr>
+                <tr class="e6">
+                  <td class="table-first"><span>Effective tax-rate (%):</span></td>
+                  <td><input type="number" class="form-control" data="taxRate" value="20"></td>
+                </tr>
+                <tr class="e6">
+                  <td class="table-first"><span>Discount-rate (%):</span></td>
+                  <td><input type="number" class="form-control" data="discountRate" value="25"></td>
+                </tr>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
